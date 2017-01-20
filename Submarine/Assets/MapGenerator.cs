@@ -35,7 +35,7 @@ public class MapGenerator : MonoBehaviour {
 		unblockPath();
 		unblockPath();
 		MeshGenerator meshGen = GetComponent<MeshGenerator>();
-		meshGen.generateMesh(map, 1);
+		meshGen.GenerateMesh(map, 1);
 
 	}
 	

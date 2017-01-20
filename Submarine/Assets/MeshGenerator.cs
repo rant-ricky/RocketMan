@@ -10,10 +10,12 @@ public class MeshGenerator : MonoBehaviour {
 
 	Dictionary<int,List<Triangle>> triangleDictionary = new Dictionary<int, List<Triangle>> ();
 
-	class Triangle {
-		public Vector3 vertexIndexA, vertexIndexB, vertexIndexC;
+	public class Triangle {
+		public int vertexIndexA;
+		public int vertexIndexB;
+		public int vertexIndexC;
 
-		Triangle(Vector3 posA, Vector3 posB, Vector3 posC) {
+		public Triangle(int posA, int posB, int posC) {
 			this.vertexIndexA = posA;
 			this.vertexIndexB = posB;
 			this.vertexIndexC = posC;
@@ -126,7 +128,7 @@ public class MeshGenerator : MonoBehaviour {
 		triangles.Add(b.vertexIndex);
 		triangles.Add(c.vertexIndex);
 
-		Triangle triangle = new Triangle (a, b, c);
+		Triangle triangle = new Triangle (a.vertexIndex, b.vertexIndex, c.vertexIndex);
 		AddTriangleToDictionary (triangle.vertexIndexA, triangle);
 		AddTriangleToDictionary (triangle.vertexIndexB, triangle);
 		AddTriangleToDictionary (triangle.vertexIndexC, triangle);
