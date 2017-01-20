@@ -14,11 +14,28 @@ public class MeshGenerator : MonoBehaviour {
 		public int vertexIndexA;
 		public int vertexIndexB;
 		public int vertexIndexC;
+		int[] vertices;
 
 		public Triangle(int posA, int posB, int posC) {
 			this.vertexIndexA = posA;
 			this.vertexIndexB = posB;
 			this.vertexIndexC = posC;
+
+			vertices = new int[3];
+			vertices[0] = posA;
+			vertices[1] = posB;
+			vertices[2] = posC;
+		}
+
+		public int this[int i] {
+			get {
+				return vertices[i];
+			}
+		}
+
+
+		public bool Contains(int vertexIndex) {
+			return vertexIndex == vertexIndexA || vertexIndex == vertexIndexB || vertexIndex == vertexIndexC;
 		}
 	}
 	public void GenerateMesh(int[,] map, float squareSize) {
@@ -129,6 +146,7 @@ public class MeshGenerator : MonoBehaviour {
 		triangles.Add(c.vertexIndex);
 
 		Triangle triangle = new Triangle (a.vertexIndex, b.vertexIndex, c.vertexIndex);
+	
 		AddTriangleToDictionary (triangle.vertexIndexA, triangle);
 		AddTriangleToDictionary (triangle.vertexIndexB, triangle);
 		AddTriangleToDictionary (triangle.vertexIndexC, triangle);
