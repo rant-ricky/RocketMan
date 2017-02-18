@@ -108,12 +108,12 @@ public class MeshGenerator : MonoBehaviour {
 		mesh.triangles = triangles.ToArray();
 		mesh.RecalculateNormals();
 
-//		searchForOutlineEdges ();
-//		outlinePositions = new Vector3[outlineIndices.Count];
-//		createOutline ();
-//		LineRenderer line = GetComponent<LineRenderer> ();
-//
-//		line.SetPositions (outlinePositions);
+		searchForOutlineEdges ();
+		outlinePositions = new Vector3[outlineIndices.Count];
+		createOutline ();
+		LineRenderer line = GetComponent<LineRenderer> ();
+		line.numPositions = outlinePositions.Length;
+		line.SetPositions (outlinePositions);
 	}
 
 	void TriangulateSquare(Square square) {
