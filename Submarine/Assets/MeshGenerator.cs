@@ -7,6 +7,10 @@ public class MeshGenerator : MonoBehaviour {
 	public SquareGrid squareGrid;
 	List<Vector3> vertices;
 	List<int> triangles;
+	List<int> outlineIndices = new List<int> ();
+	Vector3[] outlinePositions;
+	List<Triangle> actualTriangles;
+
 
 	Dictionary<int,List<Triangle>> triangleDictionary = new Dictionary<int, List<Triangle>> ();
 
@@ -14,7 +18,7 @@ public class MeshGenerator : MonoBehaviour {
 		public int vertexIndexA;
 		public int vertexIndexB;
 		public int vertexIndexC;
-		int[] vertices;
+		public int[] vertices;
 
 		public Triangle(int posA, int posB, int posC) {
 			this.vertexIndexA = posA;
@@ -38,11 +42,58 @@ public class MeshGenerator : MonoBehaviour {
 			return vertexIndex == vertexIndexA || vertexIndex == vertexIndexB || vertexIndex == vertexIndexC;
 		}
 	}
+	public void createOutline() {
+		for (int index = 0; index < outlineIndices.Count; index++) {
+			outlinePositions [index] = vertices [outlineIndices [index]];
+		}
+	}
+	public void searchForOutlineEdges() {
+		foreach (Triangle triangle in actualTriangles) {
+			if (numberOfTrianglesWithVertexPair(triangle.vertexIndexA, triangle.vertexIndexB) == 1) {
+				//this is an outline edge.
+
+				if (!outlineIndices.Contains(triangle.vertexIndexA)) {
+					outlineIndices.Add(triangle.vertexIndexA);
+				}
+				if (!outlineIndices.Contains(triangle.vertexIndexB)) {
+					outlineIndices.Add(triangle.vertexIndexB);
+				}
+			}
+			if (numberOfTrianglesWithVertexPair(triangle.vertexIndexB, triangle.vertexIndexC) == 1) {
+				//this is an outline edge.
+				if (!outlineIndices.Contains(triangle.vertexIndexB)) {
+					outlineIndices.Add(triangle.vertexIndexB);
+				}
+				if (!outlineIndices.Contains(triangle.vertexIndexC)) {
+					outlineIndices.Add(triangle.vertexIndexC);
+				}
+			}
+			if (numberOfTrianglesWithVertexPair(triangle.vertexIndexA, triangle.vertexIndexC) == 1) {
+				if (!outlineIndices.Contains(triangle.vertexIndexA)) {
+					outlineIndices.Add(triangle.vertexIndexA);
+				}
+				if (!outlineIndices.Contains(triangle.vertexIndexC)) {
+					outlineIndices.Add(triangle.vertexIndexC);
+				}
+			}
+		}
+	}
+	public int numberOfTrianglesWithVertexPair(int vertexA, int vertexB) {
+		int numberOfTrinaglesWithVertexPair = 0;
+		foreach (Triangle triangle in actualTriangles) {
+			if (triangle.Contains (vertexA) && triangle.Contains (vertexB)) {
+				numberOfTrinaglesWithVertexPair++;
+			}
+		}
+		return numberOfTrinaglesWithVertexPair;	//if outline edge this should return only 1.
+
+	}
 	public void GenerateMesh(int[,] map, float squareSize) {
 		squareGrid = new SquareGrid(map, squareSize);
 
 		vertices = new List<Vector3>();
 		triangles = new List<int>();
+		actualTriangles = new List<Triangle> ();
 
 		for (int x = 0; x < squareGrid.squares.GetLength(0); x ++) {
 			for (int y = 0; y < squareGrid.squares.GetLength(1); y ++) {
@@ -56,6 +107,13 @@ public class MeshGenerator : MonoBehaviour {
 		mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray();
 		mesh.RecalculateNormals();
+
+//		searchForOutlineEdges ();
+//		outlinePositions = new Vector3[outlineIndices.Count];
+//		createOutline ();
+//		LineRenderer line = GetComponent<LineRenderer> ();
+//
+//		line.SetPositions (outlinePositions);
 	}
 
 	void TriangulateSquare(Square square) {
@@ -146,7 +204,7 @@ public class MeshGenerator : MonoBehaviour {
 		triangles.Add(c.vertexIndex);
 
 		Triangle triangle = new Triangle (a.vertexIndex, b.vertexIndex, c.vertexIndex);
-	
+		actualTriangles.Add (triangle);
 		AddTriangleToDictionary (triangle.vertexIndexA, triangle);
 		AddTriangleToDictionary (triangle.vertexIndexB, triangle);
 		AddTriangleToDictionary (triangle.vertexIndexC, triangle);
